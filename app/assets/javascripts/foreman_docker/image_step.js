@@ -18,7 +18,7 @@ $(document).ready(function() {
   });
 
   $('#hub_tab').click( function() {
-      $('#repository_registry_id').val('');
+      $('#container_registry_id').val('');
   });
 });
 
@@ -52,7 +52,7 @@ function setAutocompleteTags() {
   tag.addClass('tags-autocomplete-loading');
   tag.val('');
   var source = [];
-  $.getJSON( tag.data("url"), { search: $('#search').val(), registry_id: $('#repository_registry_id').val() },
+  $.getJSON( tag.data("url"), { search: $('#search').val(), registry_id: $('#container_registry_id').val() },
       function(data) {
         $('#searching_spinner').hide();
         tag.removeClass('tags-autocomplete-loading');
@@ -72,7 +72,7 @@ function searchRepo(item) {
     type:'get',
     dataType:'text',
     url: $(item).attr('data-url'),
-    data: { search: $('#search').val(), registry_id: $('#repository_registry_id').val() },
+    data: { search: $('#search').val(), registry_id: $('#container_registry_id').val() },
     success: function (result) {
       $('#repository_search_results').html(result);
     },
