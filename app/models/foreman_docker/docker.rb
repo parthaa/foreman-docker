@@ -104,21 +104,24 @@ module ForemanDocker
 
     def test_connection(options = {})
       super
-      client.present?
+      api_version.present?
     # This should only rescue Fog::Errors, but Fog returns all kinds of errors...
     rescue => e
-      errors[:base] << e.message
+      errors.add(:base,
+                 _("Error connecting to Docker Host. %s") %
+                 e.message.to_s)
       false
     end
 
     protected
 
     def docker_command
+      client
       yield
     rescue Excon::Errors::Error, ::Docker::Error::DockerError => e
       logger.debug "Fog error: #{e.message}\n " + e.backtrace.join("\n ")
       errors.add(:base,
-                 _("Error creating communicating with Docker. Check the Foreman logs: %s") %
+                 _("Error communicating with Docker. Check the Foreman logs: %s") %
                  e.message.to_s)
       false
     end
@@ -142,7 +145,9 @@ module ForemanDocker
     end
 
     def api_version
-      @api_version ||= client.send(:client).api_version
+      client
+      connect = client.instance_eval { @connection }
+      connect ? JSON.parse(connect.get("/version")) : client.api_version
     end
   end
 end
